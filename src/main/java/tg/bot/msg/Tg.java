@@ -51,7 +51,7 @@ public class Tg implements Consumer<JsonObject> {
 
                             return List.of(
                                     "epub", "rar", "zip", "txt", "mobi",
-                                    "flac","mp3"
+                                    "flac", "mp3"
                             ).contains(extName);
                         })
                         .collect(Collectors.toList());
@@ -183,7 +183,7 @@ public class Tg implements Consumer<JsonObject> {
         if (first.isEmpty()) {
             return;
         }
+        TgUtil.send(chatId, messageId.getAsString(), "正在发送。。。");
         TgUtil.sendFile(chatId, fileName, first.get());
-
     }
 }
