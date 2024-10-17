@@ -3,6 +3,7 @@ package tg.bot.msg;
 import cn.hutool.cache.Cache;
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
@@ -25,31 +26,34 @@ public class Tg implements Consumer<JsonObject> {
 
     private static final Map<String, String> MAP = Map.of(
             "/comic", "/Comic",
-            "/novel", "/Novel"
+            "/novel", "/Novel",
+            "/music", "/Music"
     );
 
     private static final Map<String, List<File>> MAP_FILE = new HashMap<>();
 
     static {
         for (String value : MAP.values()) {
-            List<File> files = FileUtil.loopFiles(value)
-                    .stream()
-                    .filter(file -> {
-                        String extName = FileUtil.extName(file);
-                        if (StrUtil.isBlank(extName)) {
-                            return false;
-                        }
+            ThreadUtil.execute(() -> {
+                List<File> files = FileUtil.loopFiles(value)
+                        .stream()
+                        .filter(file -> {
+                            String extName = FileUtil.extName(file);
+                            if (StrUtil.isBlank(extName)) {
+                                return false;
+                            }
 
-                        long fileSize = file.length();
-                        double fileSizeInMB = (double) fileSize / (1024 * 1024);
-                        if (fileSizeInMB >= 50) {
-                            return false;
-                        }
+                            long fileSize = file.length();
+                            double fileSizeInMB = (double) fileSize / (1024 * 1024);
+                            if (fileSizeInMB >= 50) {
+                                return false;
+                            }
 
-                        return List.of("epub", "rar", "zip", "txt", "mobi").contains(extName);
-                    })
-                    .collect(Collectors.toList());
-            MAP_FILE.put(value, files);
+                            return List.of("epub", "rar", "zip", "txt", "mobi").contains(extName);
+                        })
+                        .collect(Collectors.toList());
+                MAP_FILE.put(value, files);
+            });
         }
     }
 
@@ -100,7 +104,10 @@ public class Tg implements Consumer<JsonObject> {
                             "/comic download [漫画名] \n\n" +
                             "/novel random \n" +
                             "/novel search [小说名] \n" +
-                            "/novel download [小说名]";
+                            "/novel download [小说名]\n\n" +
+                            "/music random \n" +
+                            "/music search [音乐名] \n" +
+                            "/music download [音乐名]";
             TgUtil.send(chatId, messageId.getAsString(), s);
             return;
         }
