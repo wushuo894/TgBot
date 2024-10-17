@@ -14,12 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 @Slf4j
 public class BotAction implements Action {
 
-    static final List<Consumer<JsonObject>> consumers = new ArrayList<>();
+    static final List<Consumer<JsonObject>> consumers = new CopyOnWriteArrayList<>();
 
     static {
         Set<Class<?>> classes = ClassUtil.scanPackage("tg.bot.msg");
