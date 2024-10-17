@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import tg.bot.entity.Config;
 
+import java.io.File;
 import java.util.Map;
 
 @Slf4j
@@ -35,9 +36,28 @@ public class TgUtil {
         HttpRequest.post(url)
                 .body(GSON.toJson(Map.of(
                         "chat_id", chatId,
-                        "text", text,
+                        "text", "<code>" + text + "</code>",
+                        "parse_mode", "HTML",
                         "reply_to_message_id", replyToMessageId
                 )))
                 .thenFunction(HttpResponse::isOk);
     }
+
+    public static synchronized void sendFile(String chatId, File file) {
+        sendFile(chatId, "", file);
+    }
+
+    public static synchronized void sendFile(String chatId, String text, File file) {
+        Config config = ConfigUtil.CONFIG;
+        String botToken = config.getBotToken();
+        String url = StrFormatter.format("https://api.telegram.org/bot{}/sendDocument", botToken);
+        HttpRequest
+                .post(url)
+                .form("chat_id", chatId)
+                .form("parse_mode", "HTML")
+                .form("caption", text)
+                .form("document", file)
+                .then(HttpResponse::isOk);
+    }
+
 }
