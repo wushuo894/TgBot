@@ -23,13 +23,18 @@ public class ConfigUtil {
                 .setChatId("");
     }
 
-    public static void load() {
+    public static File getConfigDir() {
         File configDir = new File("config");
         String config = System.getenv("CONFIG");
         if (StrUtil.isNotBlank(config)) {
             configDir = new File(config);
         }
         FileUtil.mkdir(configDir);
+        return configDir;
+    }
+
+    public static void load() {
+        File configDir = getConfigDir();
         File configFile = new File(configDir + File.separator + "config.json");
         if (!configFile.exists()) {
             FileUtil.writeUtf8String(GSON.toJson(CONFIG), configFile);
@@ -40,6 +45,7 @@ public class ConfigUtil {
                 .setIgnoreNullValue(true));
         String botToken = CONFIG.getBotToken();
         String chatId = CONFIG.getChatId();
+        LogUtil.loadLogback();
 
         Assert.notBlank(botToken, "botToken 为空");
         Assert.notBlank(chatId, "chatId 为空");
