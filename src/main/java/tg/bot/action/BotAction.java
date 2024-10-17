@@ -38,6 +38,7 @@ public class BotAction implements Action {
         if (!JSONUtil.isTypeJSON(body)) {
             return;
         }
+        res.sendOk();
         log.info("body: {}", body);
         JsonObject jsonObject = GSON.fromJson(body, JsonObject.class);
         for (Consumer<JsonObject> consumer : consumers) {
