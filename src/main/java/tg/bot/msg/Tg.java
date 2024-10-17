@@ -49,7 +49,10 @@ public class Tg implements Consumer<JsonObject> {
                                 return false;
                             }
 
-                            return List.of("epub", "rar", "zip", "txt", "mobi").contains(extName);
+                            return List.of(
+                                    "epub", "rar", "zip", "txt", "mobi",
+                                    "flac","mp3"
+                            ).contains(extName);
                         })
                         .collect(Collectors.toList());
                 MAP_FILE.put(value, files);
