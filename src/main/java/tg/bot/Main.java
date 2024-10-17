@@ -35,11 +35,12 @@ public class Main {
         HttpUtil.createServer(port)
                 .addAction("/webhook", (req, res) -> {
                     try {
+                        String clientIP = req.getClientIP();
+                        log.info("clientIP: {}", clientIP);
                         botAction.doAction(req, res);
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                     }
-                    res.write("200");
                     res.sendOk();
                 })
                 .start();

@@ -16,17 +16,27 @@ public class TgUtil {
             .disableHtmlEscaping()
             .create();
 
-    public static synchronized void send(String text) {
+
+    public static void send(String text) {
+        String chatId = ConfigUtil.CONFIG.getChatId();
+        send(chatId, text);
+    }
+
+    public static void send(String chatId, String text) {
+        send(chatId, "", text);
+    }
+
+    public static synchronized void send(String chatId, String replyToMessageId, String text) {
         log.info(text);
         Config config = ConfigUtil.CONFIG;
         String botToken = config.getBotToken();
-        String chatId = config.getChatId();
 
         String url = StrFormatter.format("https://api.telegram.org/bot{}/sendMessage", botToken);
         HttpRequest.post(url)
                 .body(GSON.toJson(Map.of(
                         "chat_id", chatId,
-                        "text", text
+                        "text", text,
+                        "reply_to_message_id", replyToMessageId
                 )))
                 .thenFunction(HttpResponse::isOk);
     }
