@@ -36,7 +36,7 @@ public class TgUtil {
         HttpRequest.post(url)
                 .body(GSON.toJson(Map.of(
                         "chat_id", chatId,
-                        "text", "<code>" + text + "</code>",
+                        "text", text,
                         "parse_mode", "HTML",
                         "reply_to_message_id", replyToMessageId
                 )))

@@ -106,6 +106,7 @@ public class Tg implements Consumer<JsonObject> {
         }
 
         if (split.size() < 2) {
+            TgUtil.send(chatId, messageId.getAsString(), "使用 /start 查看使用方法");
             return;
         }
 
@@ -121,6 +122,11 @@ public class Tg implements Consumer<JsonObject> {
                     .distinct()
                     .limit(10)
                     .collect(Collectors.joining("\n"));
+            if (StrUtil.isBlank(s)) {
+                s = "搜索不到捏";
+            } else {
+                s = "<code>" + s + "</code>";
+            }
             TgUtil.send(chatId, messageId.getAsString(), s);
             return;
         }
@@ -147,6 +153,11 @@ public class Tg implements Consumer<JsonObject> {
                     .distinct()
                     .limit(10)
                     .collect(Collectors.joining("\n"));
+            if (StrUtil.isBlank(s)) {
+                s = "搜索不到捏";
+            } else {
+                s = "<code>" + s + "</code>";
+            }
             TgUtil.send(chatId, messageId.getAsString(), s);
             return;
         }
