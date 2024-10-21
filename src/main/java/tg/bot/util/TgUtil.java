@@ -39,7 +39,8 @@ public class TgUtil {
                         "chat_id", chatId,
                         "text", text,
                         "parse_mode", "HTML",
-                        "reply_to_message_id", replyToMessageId
+                        "reply_to_message_id", replyToMessageId,
+                        "has_spoiler", true
                 )))
                 .thenFunction(HttpResponse::isOk);
     }
