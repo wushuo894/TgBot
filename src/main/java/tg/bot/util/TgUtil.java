@@ -39,8 +39,7 @@ public class TgUtil {
                         "chat_id", chatId,
                         "text", text,
                         "parse_mode", "HTML",
-                        "reply_to_message_id", replyToMessageId,
-                        "has_spoiler", false
+                        "reply_to_message_id", replyToMessageId
                 )))
                 .thenFunction(HttpResponse::isOk);
     }
@@ -54,6 +53,7 @@ public class TgUtil {
                 .form("chat_id", chatId)
                 .form("caption", "")
                 .form("photo", photo)
+                .form("has_spoiler",true)
                 .thenFunction(HttpResponse::isOk);
     }
 
