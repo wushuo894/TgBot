@@ -27,7 +27,8 @@ public class Tg implements Consumer<JsonObject> {
     private static final Map<String, String> MAP = Map.of(
             "/comic", "/Comic",
             "/novel", "/Novel",
-            "/music", "/Music"
+            "/music", "/Music",
+            "/色图", "/色图"
     );
 
     private static final Map<String, List<File>> MAP_FILE = new HashMap<>();
@@ -102,7 +103,8 @@ public class Tg implements Consumer<JsonObject> {
 
         if (split.get(0).equals("/start")) {
             String s =
-                    "/comic random \n" +
+                    "/来一份色图\n\n" +
+                            "/comic random \n" +
                             "/comic search [漫画名] \n" +
                             "/comic download [漫画名] \n\n" +
                             "/novel random \n" +
@@ -112,6 +114,13 @@ public class Tg implements Consumer<JsonObject> {
                             "/music search [音乐名] \n" +
                             "/music download [音乐名]";
             TgUtil.send(chatId, messageId.getAsString(), s);
+            return;
+        }
+
+        if (split.get(0).equals("/来一份色图")) {
+            List<File> files = MAP_FILE.get("/色图");
+            int i = RandomUtil.randomInt(0, files.size());
+            TgUtil.sendFile(chatId, files.get(i));
             return;
         }
 
