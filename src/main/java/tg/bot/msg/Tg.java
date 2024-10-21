@@ -52,7 +52,7 @@ public class Tg implements Consumer<JsonObject> {
 
                             return List.of(
                                     "epub", "rar", "zip", "txt", "mobi",
-                                    "flac", "mp3"
+                                    "flac", "mp3", "jpg", "png"
                             ).contains(extName);
                         })
                         .collect(Collectors.toList());
