@@ -1,5 +1,9 @@
 package tg.bot.util;
 
+import cn.hutool.core.img.Img;
+import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.text.StrFormatter;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
@@ -9,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import tg.bot.entity.Config;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Map;
 
@@ -52,9 +57,38 @@ public class TgUtil {
                 .contentType(ContentType.MULTIPART.getValue())
                 .form("chat_id", chatId)
                 .form("caption", "")
-                .form("photo", photo)
-                .form("has_spoiler",true)
+                .form("photo", getJpg(photo), "a.jpg")
+                .form("has_spoiler", true)
                 .thenFunction(HttpResponse::isOk);
+    }
+
+    public static synchronized byte[] getJpg(File file) {
+        if (file.length() < 1024 * 1024 * 10) {
+            return FileUtil.readBytes(file);
+        }
+        byte[] bytes;
+        do {
+            bytes = getJpg(FileUtil.readBytes(file));
+        } while (bytes.length > 1024 * 1024 * 10);
+        return bytes;
+    }
+
+    public static synchronized byte[] getJpg(byte[] bytes) {
+        ByteArrayOutputStream stream = null;
+        Img img = null;
+        try {
+            stream = new ByteArrayOutputStream();
+            img = Img.from(ImgUtil.toImage(bytes));
+            img.setQuality(0.9)
+                    .write(stream);
+        } catch (Exception e) {
+            IoUtil.flush(img);
+            IoUtil.close(stream);
+        }
+        if (stream != null) {
+            return stream.toByteArray();
+        }
+        return new byte[0];
     }
 
     public static synchronized void sendFile(String chatId, File file) {
