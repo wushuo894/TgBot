@@ -1,6 +1,7 @@
 package tg.bot.util;
 
 import cn.hutool.core.text.StrFormatter;
+import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.google.gson.Gson;
@@ -40,6 +41,18 @@ public class TgUtil {
                         "parse_mode", "HTML",
                         "reply_to_message_id", replyToMessageId
                 )))
+                .thenFunction(HttpResponse::isOk);
+    }
+
+    public static synchronized void sendPhoto(String chatId, File photo) {
+        Config config = ConfigUtil.CONFIG;
+        String botToken = config.getBotToken();
+        String url = StrFormatter.format("https://api.telegram.org/bot{}/sendPhoto", botToken);
+        HttpRequest.post(url)
+                .contentType(ContentType.MULTIPART.getValue())
+                .form("chat_id", chatId)
+                .form("caption", "")
+                .form("photo", photo)
                 .thenFunction(HttpResponse::isOk);
     }
 

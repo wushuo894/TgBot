@@ -120,7 +120,7 @@ public class Tg implements Consumer<JsonObject> {
         if (split.get(0).equals("/来一份色图")) {
             List<File> files = MAP_FILE.get("/色图");
             int i = RandomUtil.randomInt(0, files.size());
-            TgUtil.sendFile(chatId, files.get(i));
+            TgUtil.sendPhoto(chatId, files.get(i));
             return;
         }
 
