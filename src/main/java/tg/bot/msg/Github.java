@@ -43,12 +43,12 @@ public class Github implements Consumer<JsonObject> {
 
         String version = release.get("tag_name").getAsString();
         String htmlUrl = release.get("html_url").getAsString();
-        String body = release.get("body").getAsString();
+        String body = release.get("body").getAsString().replace("\n\n", "\n");
         log.info("release: {} {}", version, body);
         String text = StrFormatter.format("大家好，我是你们的小珍珠\n" +
                 "ANI-RSS 又又又又又又又又又又更新了\n" +
                 "这次的版本号是: {}\n" +
-                "更新内容: {}\n" +
+                "更新内容: \n{}\n" +
                 "链接: {}\n" +
                 "今天已经更新了{}个版本了!!!!!!", version, body, htmlUrl, i);
         TgUtil.send(text);
