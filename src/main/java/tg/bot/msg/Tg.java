@@ -66,7 +66,7 @@ public class Tg implements Consumer<JsonObject> {
         if (CACHE2.containsKey("sync")) {
             return;
         }
-        CACHE2.put("sync", 1, 3000);
+        CACHE2.put("sync", 1, 500);
 
         JsonElement updateId = jsonObject.get("update_id");
         if (Objects.isNull(updateId)) {
