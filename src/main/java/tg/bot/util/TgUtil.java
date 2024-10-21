@@ -63,13 +63,10 @@ public class TgUtil {
     }
 
     public static synchronized byte[] getJpg(File file) {
-        if (file.length() < 1024 * 1024 * 10) {
-            return FileUtil.readBytes(file);
+        byte[] bytes = FileUtil.readBytes(file);
+        while (bytes.length > 1024 * 1024 * 10) {
+            bytes = getJpg(bytes);
         }
-        byte[] bytes;
-        do {
-            bytes = getJpg(FileUtil.readBytes(file));
-        } while (bytes.length > 1024 * 1024 * 10);
         return bytes;
     }
 
