@@ -40,7 +40,7 @@ public class TgUtil {
                         "text", text,
                         "parse_mode", "HTML",
                         "reply_to_message_id", replyToMessageId,
-                        "has_spoiler", true
+                        "has_spoiler", false
                 )))
                 .thenFunction(HttpResponse::isOk);
     }
