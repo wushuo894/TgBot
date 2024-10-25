@@ -7,9 +7,10 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.URLUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tg.bot.util.TgUtil;
 
 import java.io.File;
@@ -33,9 +34,12 @@ public class Tg implements Consumer<JsonObject> {
     );
 
     private static final Map<String, List<File>> MAP_FILE = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(Tg.class);
 
     static {
-        for (String value : MAP.values()) {
+        for (Map.Entry<String, String> entry : MAP.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
             ThreadUtil.execute(() -> {
                 List<File> files = FileUtil.loopFiles(value)
                         .stream()
@@ -57,7 +61,8 @@ public class Tg implements Consumer<JsonObject> {
                             ).contains(extName);
                         })
                         .collect(Collectors.toList());
-                MAP_FILE.put(value, files);
+                log.info("{} 加载完成", key);
+                MAP_FILE.put(key, files);
             });
         }
     }
@@ -135,7 +140,7 @@ public class Tg implements Consumer<JsonObject> {
         String v = ReUtil.get(regStr, textAsString, 2);
 
         if (v.equals("random")) {
-            List<File> files = MAP_FILE.get(MAP.get(k));
+            List<File> files = MAP_FILE.get(k);
 
             Set<File> tempFiles = new HashSet<>();
 
@@ -173,12 +178,12 @@ public class Tg implements Consumer<JsonObject> {
         }
         String fileName = txt;
         if (v.equals("search")) {
-            String s = MAP_FILE.get(MAP.get(k))
+            String s = MAP_FILE.get(k)
                     .stream()
                     .map(file -> {
                         String parentName = file.getParentFile().getName();
                         String name = file.getName();
-                        return URLUtil.encodeBlank(parentName + "/" + name);
+                        return parentName + "/" + name;
                     })
                     .filter(name -> name.contains(fileName))
                     .distinct()
@@ -193,7 +198,7 @@ public class Tg implements Consumer<JsonObject> {
             return;
         }
 
-        Optional<File> first = MAP_FILE.get(MAP.get(k))
+        Optional<File> first = MAP_FILE.get(k)
                 .stream()
                 .filter(file -> {
                     String parentName = file.getParentFile().getName();
