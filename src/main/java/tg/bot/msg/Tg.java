@@ -108,7 +108,7 @@ public class Tg implements Consumer<JsonObject> {
 
         String regStr = "^(\\/\\w+) (random|search|download)(.*)$";
 
-        if (textAsString.startsWith("/start") || textAsString.startsWith("/start@")) {
+        if (textAsString.equals("/start") || textAsString.startsWith("/start@")) {
             String s =
                     "/来一份色图\n\n" +
                             "/comic random \n" +
