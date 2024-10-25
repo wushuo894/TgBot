@@ -5,6 +5,7 @@ import cn.hutool.cache.CacheUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import com.google.gson.JsonElement;
@@ -99,9 +100,10 @@ public class Tg implements Consumer<JsonObject> {
             TgUtil.send(chatId, messageId.getAsString(), "雪豹闭嘴");
             return;
         }
-        List<String> split = StrUtil.split(textAsString, " ", true, false);
 
-        if (split.get(0).equals("/start")) {
+        String regStr = "^(\\/\\w+) (random|search|download)(.*)$";
+
+        if (textAsString.startsWith("/start") || textAsString.startsWith("/start@")) {
             String s =
                     "/来一份色图\n\n" +
                             "/comic random \n" +
@@ -117,29 +119,38 @@ public class Tg implements Consumer<JsonObject> {
             return;
         }
 
-        if (split.get(0).equals("/来一份色图")) {
+        if (textAsString.equals("/来一份色图")) {
             List<File> files = MAP_FILE.get("/色图");
             int i = RandomUtil.randomInt(0, files.size());
             TgUtil.sendPhoto(chatId, files.get(i));
             return;
         }
 
-        if (split.size() < 2) {
+        if (!ReUtil.contains(regStr, textAsString)) {
             TgUtil.send(chatId, messageId.getAsString(), "使用 /start 查看使用方法");
             return;
         }
 
-        if (split.get(1).equals("random")) {
-            String s = MAP_FILE.get(MAP.get(split.get(0)))
-                    .stream()
-                    .sorted(Comparator.comparingLong(o -> RandomUtil.randomLong()))
+        String k = ReUtil.get(regStr, textAsString, 1);
+        String v = ReUtil.get(regStr, textAsString, 2);
+
+        if (v.equals("random")) {
+            List<File> files = MAP_FILE.get(MAP.get(k));
+
+            Set<File> tempFiles = new HashSet<>();
+
+            while (tempFiles.size() < 10) {
+                int i = RandomUtil.randomInt(0, files.size());
+                File file = files.get(i);
+                tempFiles.add(file);
+            }
+
+            String s = tempFiles.stream()
                     .map(file -> {
                         String parentName = file.getParentFile().getName();
                         String name = file.getName();
-                        return URLUtil.encodeBlank(parentName + "/" + name);
+                        return parentName + "/" + name;
                     })
-                    .distinct()
-                    .limit(10)
                     .collect(Collectors.joining("\n"));
             if (StrUtil.isBlank(s)) {
                 s = "搜索不到捏";
@@ -150,18 +161,19 @@ public class Tg implements Consumer<JsonObject> {
             return;
         }
 
-        if (split.size() != 3) {
+        String txt = ReUtil.get(regStr, textAsString, 3);
+
+        if (StrUtil.isBlank(txt)) {
             return;
         }
-        if (!MAP.containsKey(split.get(0))) {
+        txt = txt.trim();
+
+        if (!MAP.containsKey(k)) {
             return;
         }
-        if (!List.of("search", "download").contains(split.get(1))) {
-            return;
-        }
-        String fileName = URLUtil.decode(split.get(2));
-        if (split.get(1).equals("search")) {
-            String s = MAP_FILE.get(MAP.get(split.get(0)))
+        String fileName = txt;
+        if (v.equals("search")) {
+            String s = MAP_FILE.get(MAP.get(k))
                     .stream()
                     .map(file -> {
                         String parentName = file.getParentFile().getName();
@@ -181,7 +193,7 @@ public class Tg implements Consumer<JsonObject> {
             return;
         }
 
-        Optional<File> first = MAP_FILE.get(MAP.get(split.get(0)))
+        Optional<File> first = MAP_FILE.get(MAP.get(k))
                 .stream()
                 .filter(file -> {
                     String parentName = file.getParentFile().getName();
