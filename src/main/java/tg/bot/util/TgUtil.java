@@ -64,8 +64,15 @@ public class TgUtil {
 
     public static synchronized byte[] getJpg(File file) {
         byte[] bytes = FileUtil.readBytes(file);
+        int i = 0;
         while (bytes.length > 1024 * 1024 * 10) {
             bytes = getJpg(bytes);
+            i++;
+
+            if (i >= 10) {
+                log.error("压缩失败");
+                throw new RuntimeException("压缩失败");
+            }
         }
         return bytes;
     }
