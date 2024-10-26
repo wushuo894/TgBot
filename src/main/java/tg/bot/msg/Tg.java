@@ -127,7 +127,7 @@ public class Tg implements Consumer<JsonObject> {
         if (textAsString.equals("/来一份色图")) {
             List<File> files = MAP_FILE.get("/色图");
             int i = RandomUtil.randomInt(0, files.size());
-            TgUtil.sendPhoto(chatId, files.get(i));
+            ThreadUtil.execute(() -> TgUtil.sendPhoto(chatId, files.get(i)));
             return;
         }
 
