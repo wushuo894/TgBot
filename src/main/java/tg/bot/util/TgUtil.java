@@ -49,7 +49,7 @@ public class TgUtil {
                 .thenFunction(HttpResponse::isOk);
     }
 
-    public static synchronized void sendPhoto(String chatId, File photo) {
+    public static void sendPhoto(String chatId, File photo) {
         Config config = ConfigUtil.CONFIG;
         String botToken = config.getBotToken();
         String url = StrFormatter.format("https://api.telegram.org/bot{}/sendPhoto", botToken);
@@ -62,7 +62,7 @@ public class TgUtil {
                 .thenFunction(HttpResponse::isOk);
     }
 
-    public static synchronized byte[] getJpg(File file) {
+    public static byte[] getJpg(File file) {
         byte[] bytes = FileUtil.readBytes(file);
         int i = 0;
         while (bytes.length > 1024 * 1024 * 10) {
@@ -77,7 +77,7 @@ public class TgUtil {
         return bytes;
     }
 
-    public static synchronized byte[] getJpg(byte[] bytes) {
+    public static byte[] getJpg(byte[] bytes) {
         log.info("压缩图片");
         ByteArrayOutputStream stream = null;
         Img img = null;
