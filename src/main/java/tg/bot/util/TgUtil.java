@@ -79,11 +79,11 @@ public class TgUtil {
             img = Img.from(ImgUtil.toImage(bytes));
             img.setQuality(0.8)
                     .write(stream);
+            return stream.toByteArray();
         } finally {
             IoUtil.flush(img);
             IoUtil.close(stream);
         }
-        return stream.toByteArray();
     }
 
     public static synchronized void sendFile(String chatId, File file) {
