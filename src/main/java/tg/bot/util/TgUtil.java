@@ -84,7 +84,7 @@ public class TgUtil {
         try {
             stream = new ByteArrayOutputStream();
             img = Img.from(ImgUtil.toImage(bytes));
-            img.setQuality(0.8)
+            img.setQuality(0.6)
                     .write(stream);
             return stream.toByteArray();
         } finally {
