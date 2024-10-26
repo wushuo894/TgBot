@@ -71,21 +71,19 @@ public class TgUtil {
     }
 
     public static synchronized byte[] getJpg(byte[] bytes) {
+        log.info("压缩图片");
         ByteArrayOutputStream stream = null;
         Img img = null;
         try {
             stream = new ByteArrayOutputStream();
             img = Img.from(ImgUtil.toImage(bytes));
-            img.setQuality(0.9)
+            img.setQuality(0.8)
                     .write(stream);
-        } catch (Exception e) {
+        } finally {
             IoUtil.flush(img);
             IoUtil.close(stream);
         }
-        if (stream != null) {
-            return stream.toByteArray();
-        }
-        return new byte[0];
+        return stream.toByteArray();
     }
 
     public static synchronized void sendFile(String chatId, File file) {
